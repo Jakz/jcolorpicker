@@ -1,5 +1,6 @@
 package com.github.jakz.jcolorpicker;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -10,6 +11,7 @@ import java.awt.LinearGradientPaint;
 import java.awt.MultipleGradientPaint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -37,7 +39,7 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   
   private float hue;
   private ColorHSB color;
-    
+
   ColorCanvas(ColorPicker chooser)
   {
     this.chooser = chooser;
@@ -52,13 +54,18 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   {
     Graphics2D g = (Graphics2D)gfx;
     
+    if (chooser.isAntialiasingEnabled())
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+          RenderingHints.VALUE_ANTIALIAS_ON); 
+    
     if (image != null)
       gfx.drawImage(image, insets.left, insets.top, null);
     
     if (color != null)
     {
       g.setColor(Color.getHSBColor(color.h+0.5f, color.s, 1.0f-color.b));
-      g.drawOval(insets.left + (int)(color.s*width) - 3, insets.top + (int)((1.0f-color.b)*height) - 3, 7, 7);
+      g.setStroke(new BasicStroke(1.2f));
+      g.drawOval(insets.left + (int)(color.s*width) - 6, insets.top + (int)((1.0f-color.b)*height) - 6, 9, 9);
     }
   }
   
@@ -146,6 +153,8 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   void setColor(Color color)
   {
     this.color = new ColorHSB(color);
+    this.hue = this.color.h;
+    cacheCanvas();
     repaint();
   }
 

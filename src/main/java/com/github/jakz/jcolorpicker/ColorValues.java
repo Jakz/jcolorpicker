@@ -5,9 +5,11 @@ import java.awt.FlowLayout;
 import java.util.Arrays;
 
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.GroupLayout.Alignment;
 
 class ColorValues extends JPanel
 {
@@ -60,17 +62,41 @@ class ColorValues extends JPanel
   {
     removeAll();
     
+    GroupLayout layout = new GroupLayout(this);
+    layout.setAutoCreateGaps(true);
+    layout.setAutoCreateContainerGaps(true);
+    setLayout(layout);
+    
+    GroupLayout.ParallelGroup labelGroup = layout.createParallelGroup();
+    GroupLayout.ParallelGroup fieldsGroup = layout.createParallelGroup();
+
     for (int i = 0; i < labels.length; ++i)
     {
       if (visible[i])
       {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.add(labels[i]);
-        panel.add(fields[i]);  
-        add(panel);
+        labelGroup.addComponent(labels[i]);
+        fieldsGroup.addComponent(fields[i]);
       }
     }
+    
+    GroupLayout.SequentialGroup horGroup = layout.createSequentialGroup();
+    horGroup.addGroup(labelGroup).addGroup(fieldsGroup);
+    layout.setHorizontalGroup(horGroup);
+    
+    GroupLayout.SequentialGroup verGroup = layout.createSequentialGroup();
+
+    for (int i = 0; i < labels.length; ++i)
+    {      
+      if (visible[i])
+      {
+        GroupLayout.ParallelGroup group = layout.createParallelGroup(Alignment.BASELINE);
+        group.addComponent(labels[i]);
+        group.addComponent(fields[i]);
+        verGroup.addGroup(group);
+      }
+    }
+    
+    layout.setVerticalGroup(verGroup);
     
     revalidate();
   }

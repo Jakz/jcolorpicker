@@ -17,10 +17,15 @@ public class ColorPicker extends JPanel
   private final HueCanvas hueCanvas;
   private final ColorCell colorCell;
   private final ColorValues colorValues;
+  private final Buttons buttons;
+  
+  private ColorSetter setter;
+  private ColorGetter getter;
   
   private ColorHSB color;
   
   private Cursor pickCursor;
+  private boolean isAntialiasingEnabled;
   
   public ColorPicker()
   {
@@ -28,8 +33,10 @@ public class ColorPicker extends JPanel
     hueCanvas = new HueCanvas(this);
     colorCell = new ColorCell(this);
     colorValues = new ColorValues(this);
+    buttons = new Buttons(this);
     
     pickCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
+    isAntialiasingEnabled = true;
     
     setPreferredSize(new Dimension(500,400));
     
@@ -41,8 +48,8 @@ public class ColorPicker extends JPanel
     c.insets = new Insets(5,5,5,10);
     c.gridx = 0;
     c.gridy = 0;
-    c.gridwidth = 3;
-    c.gridheight = 3;
+    c.gridwidth = 4;
+    c.gridheight = 4;
     c.weightx = 0.8;
     c.weighty = 1.0;
     
@@ -53,7 +60,7 @@ public class ColorPicker extends JPanel
     c.gridx = 4;
     c.gridy = 0;
     c.gridwidth = 1;
-    c.gridheight = 3;
+    c.gridheight = 4;
     c.weightx = 0.1;
     c.weighty = 1.0;
     
@@ -77,9 +84,19 @@ public class ColorPicker extends JPanel
     c.gridwidth = 1;
     c.gridheight = 2;
     c.weightx = 0.1;
-    //c.weighty = 0.8;
+    c.weighty = 0.6;
     
     add(colorValues, c);
+    
+    c.gridx = 5;
+    c.anchor = GridBagConstraints.SOUTH;
+    c.gridy = 3;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    c.weightx = 0.1;
+    c.weighty = 0.2;
+    
+    add(buttons, c);
 
   }
   
@@ -93,6 +110,32 @@ public class ColorPicker extends JPanel
     this.color = color;
     colorCell.setColor(color);
     colorValues.setColor(color);
+  }
+  
+  void cancel()
+  {
+    if (setter == null)
+      throw new IllegalStateException("ColorPicker setter must be non-null");
+    setter.set(null);
+  }
+  
+  void ok()
+  {
+    if (setter == null)
+      throw new IllegalStateException("ColorPicker setter must be non-null");
+    setter.set(color.toRGB());
+  }
+  
+  // TODO: doc
+  public void setColorSetter(ColorSetter setter)
+  {
+    this.setter = setter;
+  }
+  
+  // TODO: doc
+  public void setColorGetter(ColorGetter getter)
+  {
+    this.getter = getter;
   }
   
   /**
@@ -113,6 +156,28 @@ public class ColorPicker extends JPanel
   public Cursor getPickCursor()
   {
     return pickCursor;
+  }
+  
+  /**
+   * Set if antialiasing should be enabled for the color picker.
+   * @param enabled true if antialiasing should be enabled
+   */
+  public void setAntialiasingEnabled(boolean enabled)
+  {
+    if (isAntialiasingEnabled != enabled)
+    {
+      isAntialiasingEnabled = enabled;
+      repaint();
+    }
+  }
+  
+  /**
+   * Returns <code>true</code> if antialiasing is enabled for the color picker.
+   * @return antialiasing enabled value
+   */
+  public boolean isAntialiasingEnabled()
+  {
+    return isAntialiasingEnabled;
   }
   
   // TODO doc

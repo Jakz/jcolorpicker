@@ -1,10 +1,13 @@
 package com.github.jakz.jcolorpicker;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -40,11 +43,18 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
   @Override
   public void paintComponent(Graphics gfx)
   {
-    gfx.drawImage(image, insets.left + margin, insets.top, null);
-    gfx.setColor(Color.BLACK);
+    Graphics2D g = (Graphics2D)gfx;
+    
+    if (chooser.isAntialiasingEnabled())
+      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+          RenderingHints.VALUE_ANTIALIAS_ON); 
+    
+    g.drawImage(image, insets.left + margin, insets.top, null);
+    g.setColor(Color.BLACK);
     
     int y = (int)(hue*height);
-    gfx.drawRect(insets.left, y/*-2-insets.top*/, getWidth()-1, 5);
+    g.setStroke(new BasicStroke(1.2f));
+    g.drawRect(insets.left, y-3, getWidth()-1, 5);
   }
   
   private void cacheCanvas()
@@ -141,13 +151,11 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
 
   public void mouseEntered(MouseEvent e)
   {
-    // TODO Auto-generated method stub
-    
+    setCursor(chooser.getPickCursor());
   }
 
   public void mouseExited(MouseEvent e)
   {
-    // TODO Auto-generated method stub
-    
+    setCursor(Cursor.getDefaultCursor());
   }
 }
