@@ -33,7 +33,7 @@ class ColorValues extends JPanel
   
   private boolean visible[] = new boolean[ids.length];
   
-  private Color color;
+  private ColorHSB color;
     
   ColorValues(ColorPicker chooser)
   {
@@ -86,18 +86,19 @@ class ColorValues extends JPanel
     }
   }
   
-  void setColor(Color color)
+  void setColor(ColorHSB color)
   {
     this.color = color;
     
-    int r = color.getRed();
-    int g = color.getGreen();
-    int b = color.getBlue();
-    float[] hsb = Color.RGBtoHSB(r, g, b, null);
+    Color colorRgb = color.toRGB();
+    
+    int r = colorRgb.getRed();
+    int g = colorRgb.getGreen();
+    int b = colorRgb.getBlue();
 
     float[] values = { 
         r / 255.0f, g / 255.0f, b / 255.0f, 
-        hsb[0], hsb[1], hsb[2] 
+        color.h, color.s, color.b 
     };
     
     for (int i = 0; i < ids.length; ++i)

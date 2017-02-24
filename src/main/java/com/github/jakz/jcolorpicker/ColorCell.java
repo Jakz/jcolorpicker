@@ -12,12 +12,15 @@ class ColorCell extends JPanel
 {
   private final ColorPicker chooser;
   
-  private Color color;
+  private ColorHSB color;
+  private Color rgbColor;
   
   ColorCell(ColorPicker chooser)
   {
     this.chooser = chooser;
-    color = Color.WHITE;
+    
+    rgbColor = Color.WHITE;
+    color = new ColorHSB(rgbColor);
     
     setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
   }
@@ -30,13 +33,14 @@ class ColorCell extends JPanel
     final int width = getWidth() - (insets.right + insets.left);
     final int height = getHeight() - (insets.top + insets.bottom);  
     
-    g.setColor(color);
+    g.setColor(rgbColor);
     g.fillRect(insets.left, insets.top, width, height);
   }
   
-  void setColor(Color color)
+  void setColor(ColorHSB color)
   {
     this.color = color;
+    this.rgbColor = color.toRGB();
     repaint();
   }
 }

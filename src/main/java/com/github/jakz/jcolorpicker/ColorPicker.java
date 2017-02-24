@@ -18,7 +18,7 @@ public class ColorPicker extends JPanel
   private final ColorCell colorCell;
   private final ColorValues colorValues;
   
-  private Color color;
+  private ColorHSB color;
   
   private Cursor pickCursor;
   
@@ -88,7 +88,7 @@ public class ColorPicker extends JPanel
     colorCanvas.huePicked(hue);
   }
   
-  void pickColor(Color color)
+  void pickColor(ColorHSB color)
   {
     this.color = color;
     colorCell.setColor(color);
@@ -118,15 +118,15 @@ public class ColorPicker extends JPanel
   // TODO doc
   public void setColor(Color color)
   {
-    float hsb[] = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getRed(), null);
+    ColorHSB hsbColor = new ColorHSB(color);
     colorCanvas.setColor(color);
-    hueCanvas.setHue(hsb[0]);
-    pickColor(color);
+    hueCanvas.setHue(hsbColor.h);
+    pickColor(hsbColor);
   }
   
   public Color getColor()
   {
-    return color;
+    return color.toRGB();
   }
   
   // TODO doc

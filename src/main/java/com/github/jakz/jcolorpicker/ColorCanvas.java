@@ -34,10 +34,10 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   private BufferedImage image;
   private int[] pixels;  
   private int width, height;
-  private Color color;
   
-  private float hue = 0.0f;
-  
+  private float hue;
+  private ColorHSB color;
+    
   ColorCanvas(ColorPicker chooser)
   {
     this.chooser = chooser;
@@ -57,9 +57,8 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
     
     if (color != null)
     {
-      float hsb[] = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-      g.setColor(Color.getHSBColor(hsb[0]+0.5f, hsb[1], 1.0f-hsb[2]));
-      g.drawOval(insets.left + (int)(hsb[1]*width) - 3, insets.top + (int)((1.0f-hsb[2])*height) - 3, 7, 7);
+      g.setColor(Color.getHSBColor(color.h+0.5f, color.s, 1.0f-color.b));
+      g.drawOval(insets.left + (int)(color.s*width) - 3, insets.top + (int)((1.0f-color.b)*height) - 3, 7, 7);
     }
   }
   
@@ -121,25 +120,22 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
     
     if (color != null)
     {
-      float hsb[] = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-      hsb[0] = hue;
-      color = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+      color.h = this.hue;
       chooser.pickColor(color);
     }
   }
   
   void colorPicked(int x, int y)
-  {
-    Color color = null;
+  {    
+    float saturation = x / (float)width;
+    float brightness = 1.0f - (y / (float)height);
     
-    if (x >= 0 && y >= 0 && x < width && y < height)
-      color = new Color(pixels[x + y*width]);
-    else if (x >= width && y >= height)
-      color = Color.BLACK;
-    else if (x < 0 && y < 0)
-      color = Color.WHITE;
+    saturation = Math.max(0.0f, Math.min(1.0f, saturation));
+    brightness = Math.max(0.0f, Math.min(1.0f, brightness));
+
+    ColorHSB color = new ColorHSB(hue, saturation, brightness);
     
-    if (color != null && color != this.color)
+    if (!color.equals(this.color))
     {
       this.color = color;
       chooser.pickColor(color);
@@ -149,7 +145,7 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   
   void setColor(Color color)
   {
-    this.color = color;
+    this.color = new ColorHSB(color);
     repaint();
   }
 

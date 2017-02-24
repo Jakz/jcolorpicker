@@ -25,6 +25,7 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
   private BufferedImage image;
   private int[] pixels;
   private int width, height;
+  private final int margin = 2;
   
   float hue = 0.0f;
   
@@ -39,18 +40,18 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
   @Override
   public void paintComponent(Graphics gfx)
   {
-    gfx.drawImage(image, insets.left, insets.top, null);
+    gfx.drawImage(image, insets.left + margin, insets.top, null);
     gfx.setColor(Color.BLACK);
     
     int y = (int)(hue*height);
-    gfx.drawRect(0, y-2-insets.top, width, 5);
+    gfx.drawRect(insets.left, y/*-2-insets.top*/, getWidth()-1, 5);
   }
   
   private void cacheCanvas()
   {
     insets = this.getInsets();
         
-    width = getWidth() - (insets.right + insets.left);
+    width = getWidth() - (insets.right + insets.left) - margin*2;
     height = getHeight() - (insets.top + insets.bottom);    
     
     /* let's use directly the underlying raster to optimize performance */
@@ -92,23 +93,13 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
   
   public void hueChanged(int x, int y)
   {
-    float hue = Float.NaN;
+    float hue = y / (float) height;
     
+    hue = Math.max(0.0f, Math.min(1.0f, hue));
     
-    
-    if (x >= 0 && y >= 0 && x < width && y < height)
-      hue = y / (float) height;
-    else if (x >= width && y >= height)
-      hue = 0.0f;
-    else if (x < 0 && y < 0)
-      hue = 1.0f;
-        
-    if (!Float.isNaN(hue))
-    {
-      this.hue = hue;
-      chooser.pickHue(hue);
-      repaint();
-    }
+    this.hue = hue;
+    chooser.pickHue(hue);
+    repaint();
   }
 
   public void componentResized(ComponentEvent e)
