@@ -2,6 +2,7 @@ package com.github.jakz.jcolorpicker;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.util.Arrays;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -12,12 +13,14 @@ class ColorValues extends JPanel
 {
   private final ColorPicker chooser;
   
-  private final static int RED = 0;
-  private final static int GREEN = 1;
-  private final static int BLUE = 2;
-  private final static int HUE = 3;
-  private final static int SATURATION = 4;
-  private final static int BRIGHTNESS = 5;
+  private static final Value[] ids = new Value[] {
+    Value.RED, Value.GREEN, Value.BLUE, 
+    Value.HUE, Value.SATURATION, Value.BRIGHTNESS,
+  };
+  
+  private static final int[] maxValues = new int[] {
+    255, 255, 255, 360, 100, 100
+  };
   
   private static final String[] captions = new String[] {
     "R", "G", "B", "H", "S", "B"
@@ -26,6 +29,12 @@ class ColorValues extends JPanel
   private JLabel[] labels;
   private JTextField[] fields;
   
+  private Format[] formats = new Format[ids.length];
+  
+  private boolean visible[] = new boolean[ids.length];
+  
+  private Color color;
+    
   ColorValues(ColorPicker chooser)
   {
     this.chooser = chooser;
@@ -37,33 +46,79 @@ class ColorValues extends JPanel
     
     for (int i = 0; i < labels.length; ++i)
     {
+      formats[i] = Format.DECIMAL;
+      visible[i] = true;
+      
       labels[i] = new JLabel(captions[i]);
-      fields[i] = new JTextField(3);
-      
-      JPanel panel = new JPanel();
-      panel.setLayout(new FlowLayout());
-      panel.add(labels[i]);
-      panel.add(fields[i]);
-      
-      add(panel);
+      fields[i] = new JTextField(4);
+    }
+    
+    rebuildFields();
+  }
+  
+  public void rebuildFields()
+  {
+    removeAll();
+    
+    for (int i = 0; i < labels.length; ++i)
+    {
+      if (visible[i])
+      {
+        JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
+        panel.add(labels[i]);
+        panel.add(fields[i]);  
+        add(panel);
+      }
+    }
+    
+    revalidate();
+  }
+  
+  private String getTextValue(float value, int maxValue, Format format)
+  {
+    switch (format)
+    {
+      case DECIMAL: return Integer.toString((int)Math.round(value*maxValue));
+      case FLOAT: return String.format("%1.3f", value);
+      case HEX: return String.format("%02X",(int)Math.round(value*maxValue));
+      default: return "";
     }
   }
   
   void setColor(Color color)
   {
+    this.color = color;
+    
     int r = color.getRed();
     int g = color.getGreen();
     int b = color.getBlue();
-    
-    fields[RED].setText(Integer.toString(r));
-    fields[GREEN].setText(Integer.toString(g));
-    fields[BLUE].setText(Integer.toString(b));
-    
     float[] hsb = Color.RGBtoHSB(r, g, b, null);
+
+    float[] values = { 
+        r / 255.0f, g / 255.0f, b / 255.0f, 
+        hsb[0], hsb[1], hsb[2] 
+    };
     
+    for (int i = 0; i < ids.length; ++i)
+    {
+      String text = getTextValue(values[i], maxValues[i], formats[i]);
+      fields[ids[i].ordinal()].setText(text);
+    }
+  }
+  
+  void setFormat(Value id, Format format)
+  {
+    // TODO: forbid hex for hsv
     
-    fields[HUE].setText(Float.toString(hsb[0]));
-    fields[SATURATION].setText(Float.toString(hsb[1]));
-    fields[BRIGHTNESS].setText(Float.toString(hsb[2]));
+    formats[id.ordinal()] = format;
+    if (color != null)
+      setColor(color);
+  }
+  
+  void setValuevisible(Value id, boolean visible)
+  {
+    this.visible[id.ordinal()] = visible;
+    rebuildFields();
   }
 }

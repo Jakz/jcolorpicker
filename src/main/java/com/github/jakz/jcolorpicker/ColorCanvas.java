@@ -34,8 +34,9 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   private BufferedImage image;
   private int[] pixels;  
   private int width, height;
+  private Color color;
   
-  private float hue = 0.2f;
+  private float hue = 0.0f;
   
   ColorCanvas(ColorPicker chooser)
   {
@@ -49,12 +50,8 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   @Override
   public void paintComponent(Graphics gfx)
   {
-    super.paintComponent(gfx);
-    
-    Graphics2D g = (Graphics2D)gfx;
-    
     if (image != null)
-    g.drawImage(image, insets.left, insets.top, null);
+      gfx.drawImage(image, insets.left, insets.top, null);
   }
   
   private void cacheCanvas()
@@ -107,7 +104,22 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   public void componentShown(ComponentEvent e) { }
   public void componentHidden(ComponentEvent e) { }
   
-  public void colorPicked(int x, int y)
+  void huePicked(float hue)
+  {        
+    this.hue = hue;
+    cacheCanvas();
+    repaint();
+    
+    if (color != null)
+    {
+      float hsb[] = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+      hsb[0] = hue;
+      color = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+      chooser.pickColor(color);
+    }
+  }
+  
+  void colorPicked(int x, int y)
   {
     Color color = null;
     
@@ -118,8 +130,11 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
     else if (x < 0 && y < 0)
       color = Color.WHITE;
     
-    if (color != null)
+    if (color != null && color != this.color)
+    {
+      this.color = color;
       chooser.pickColor(color);
+    }
   }
 
   public void mouseClicked(MouseEvent e)

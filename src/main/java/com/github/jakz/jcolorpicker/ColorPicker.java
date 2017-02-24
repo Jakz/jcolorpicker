@@ -81,6 +81,11 @@ public class ColorPicker extends JPanel
 
   }
   
+  void pickHue(float hue)
+  {
+    colorCanvas.huePicked(hue);
+  }
+  
   void pickColor(Color color)
   {
     colorCell.setColor(color);
@@ -105,5 +110,43 @@ public class ColorPicker extends JPanel
   public Cursor getPickCursor()
   {
     return pickCursor;
+  }
+  
+  // TODO doc
+  public void setValueFormat(Value value, Format format)
+  {
+    if (value == Value.RGB_CHANNELS)
+    {
+      colorValues.setFormat(Value.RED, format);
+      colorValues.setFormat(Value.GREEN, format);
+      colorValues.setFormat(Value.BLUE, format);
+    }
+    else if (value == Value.HSB_CHANNELS)
+    {
+      colorValues.setFormat(Value.HUE, format);
+      colorValues.setFormat(Value.SATURATION, format);
+      colorValues.setFormat(Value.BRIGHTNESS, format);
+    }
+    else
+      colorValues.setFormat(value, format);
+  }
+  
+  // TODO doc
+  public void setValueVisible(Value value, boolean visible)
+  {
+    if (value == Value.RGB_CHANNELS)
+    {
+      colorValues.setValuevisible(Value.RED, visible);
+      colorValues.setValuevisible(Value.GREEN, visible);
+      colorValues.setValuevisible(Value.BLUE, visible);
+    }
+    else if (value == Value.HSB_CHANNELS)
+    {
+      colorValues.setValuevisible(Value.HUE, visible);
+      colorValues.setValuevisible(Value.SATURATION, visible);
+      colorValues.setValuevisible(Value.BRIGHTNESS, visible);
+    }
+    else
+      colorValues.setValuevisible(value, visible);
   }
 }
