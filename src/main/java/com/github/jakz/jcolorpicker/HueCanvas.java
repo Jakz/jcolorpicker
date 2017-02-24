@@ -26,6 +26,8 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
   private int[] pixels;
   private int width, height;
   
+  float hue = 0.0f;
+  
   HueCanvas(ColorPicker chooser)
   {
     this.chooser = chooser;
@@ -38,6 +40,10 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
   public void paintComponent(Graphics gfx)
   {
     gfx.drawImage(image, insets.left, insets.top, null);
+    gfx.setColor(Color.BLACK);
+    
+    int y = (int)(hue*height);
+    gfx.drawRect(0, y-2-insets.top, width, 5);
   }
   
   private void cacheCanvas()
@@ -78,6 +84,12 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
     }
   }
   
+  void setHue(float hue)
+  {
+    this.hue = hue;
+    repaint();
+  }
+  
   public void hueChanged(int x, int y)
   {
     float hue = Float.NaN;
@@ -92,7 +104,11 @@ class HueCanvas extends JPanel implements ComponentListener, MouseListener,
       hue = 1.0f;
         
     if (!Float.isNaN(hue))
+    {
+      this.hue = hue;
       chooser.pickHue(hue);
+      repaint();
+    }
   }
 
   public void componentResized(ComponentEvent e)

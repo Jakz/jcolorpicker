@@ -50,8 +50,17 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
   @Override
   public void paintComponent(Graphics gfx)
   {
+    Graphics2D g = (Graphics2D)gfx;
+    
     if (image != null)
       gfx.drawImage(image, insets.left, insets.top, null);
+    
+    if (color != null)
+    {
+      float hsb[] = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+      g.setColor(Color.getHSBColor(hsb[0]+0.5f, hsb[1], 1.0f-hsb[2]));
+      g.drawOval(insets.left + (int)(hsb[1]*width) - 3, insets.top + (int)((1.0f-hsb[2])*height) - 3, 7, 7);
+    }
   }
   
   private void cacheCanvas()
@@ -134,7 +143,14 @@ class ColorCanvas extends JPanel implements ComponentListener, MouseListener,
     {
       this.color = color;
       chooser.pickColor(color);
+      repaint();
     }
+  }
+  
+  void setColor(Color color)
+  {
+    this.color = color;
+    repaint();
   }
 
   public void mouseClicked(MouseEvent e)
