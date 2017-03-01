@@ -39,6 +39,34 @@ public class ColorHSB
   int toIntRGB() { return Color.HSBtoRGB(h, s, b); }
   Color toRGB() { return new Color(Color.HSBtoRGB(h, s, b)); }
   
+  float getComponent(Value value)
+  {
+    if (value.isHSB())
+    {
+      switch (value)
+      {
+        case HUE: return hue();
+        case SATURATION: return saturation();
+        case BRIGHTNESS: return brightness();
+        default: return 0.0f;
+      }
+    }
+    else if (value.isRGB())
+    {
+      Color color = toRGB();
+      
+      switch (value)
+      {
+        case RED: return color.getRed() / 255.0f;
+        case GREEN: return color.getGreen() / 255.0f;
+        case BLUE: return color.getBlue() / 255.0f;
+        default: return 0.0f;
+      }
+    }
+    
+    return 0.0f;
+  }
+  
   @Override
   public boolean equals(Object object)
   {

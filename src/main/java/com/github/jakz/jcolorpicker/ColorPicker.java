@@ -26,6 +26,7 @@ public class ColorPicker extends JPanel
   
   private Cursor pickCursor;
   private boolean isAntialiasingEnabled;
+  private boolean autoSelectColorValue;
   
   public ColorPicker()
   {
@@ -160,6 +161,7 @@ public class ColorPicker extends JPanel
   
   /**
    * Set if antialiasing should be enabled for the color picker.
+   * Default value is <code>true</code>
    * @param enabled true if antialiasing should be enabled
    */
   public void setAntialiasingEnabled(boolean enabled)
@@ -178,6 +180,17 @@ public class ColorPicker extends JPanel
   public boolean isAntialiasingEnabled()
   {
     return isAntialiasingEnabled;
+  }
+  
+  // TODO: doc
+  public void setAutoSelectColorValue(boolean enabled)
+  {
+    autoSelectColorValue = enabled;
+  }
+  
+  public boolean isAutoSelectColorValueEnabled()
+  {
+    return autoSelectColorValue;
   }
   
   // TODO doc
@@ -218,17 +231,17 @@ public class ColorPicker extends JPanel
   {
     if (value == Value.RGB_CHANNELS)
     {
-      colorValues.setValuevisible(Value.RED, visible);
-      colorValues.setValuevisible(Value.GREEN, visible);
-      colorValues.setValuevisible(Value.BLUE, visible);
+      colorValues.setValueVisible(Value.RED, visible);
+      colorValues.setValueVisible(Value.GREEN, visible);
+      colorValues.setValueVisible(Value.BLUE, visible);
     }
     else if (value == Value.HSB_CHANNELS)
     {
-      colorValues.setValuevisible(Value.HUE, visible);
-      colorValues.setValuevisible(Value.SATURATION, visible);
-      colorValues.setValuevisible(Value.BRIGHTNESS, visible);
+      colorValues.setValueVisible(Value.HUE, visible);
+      colorValues.setValueVisible(Value.SATURATION, visible);
+      colorValues.setValueVisible(Value.BRIGHTNESS, visible);
     }
     else
-      colorValues.setValuevisible(value, visible);
+      colorValues.setValueVisible(value, visible);
   }
 }

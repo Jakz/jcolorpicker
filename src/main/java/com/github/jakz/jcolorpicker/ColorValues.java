@@ -2,7 +2,15 @@ package com.github.jakz.jcolorpicker;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
@@ -11,7 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 
-class ColorValues extends JPanel
+class ColorValues extends JPanel implements FocusListener, MouseListener,
+  ActionListener
 {
   private final ColorPicker chooser;
   
@@ -28,6 +37,8 @@ class ColorValues extends JPanel
     "R", "G", "B", "H", "S", "B"
   };
   
+  private final Map<JTextField, Value> mapping;
+  
   private JLabel[] labels;
   private JTextField[] fields;
   
@@ -41,6 +52,7 @@ class ColorValues extends JPanel
   {
     this.chooser = chooser;
     
+    mapping = new HashMap<>();
     labels = new JLabel[captions.length];
     fields = new JTextField[captions.length];
     
@@ -53,6 +65,11 @@ class ColorValues extends JPanel
       
       labels[i] = new JLabel(captions[i]);
       fields[i] = new JTextField(4);
+      fields[i].addFocusListener(this);
+      fields[i].addMouseListener(this);
+      fields[i].addActionListener(this);
+      
+      mapping.put(fields[i], ids[i]);
     }
     
     rebuildFields();
@@ -143,9 +160,82 @@ class ColorValues extends JPanel
       setColor(color);
   }
   
-  void setValuevisible(Value id, boolean visible)
+  void setValueVisible(Value id, boolean visible)
   {
     this.visible[id.ordinal()] = visible;
     rebuildFields();
+  }
+
+  @Override
+  public void focusGained(FocusEvent e)
+  {
+    if (!e.isTemporary())
+    {   
+      System.out.println("Focus Gained");
+      if (chooser.isAutoSelectColorValueEnabled())
+        ((JTextField)e.getSource()).selectAll();
+    }
+  }
+
+  @Override
+  public void focusLost(FocusEvent e)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent e)
+  {
+    System.out.println("Mouse Clicked");
+    if (chooser.isAutoSelectColorValueEnabled())
+      ((JTextField)e.getSource()).selectAll(); 
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e)
+  {
+    if (chooser.isAutoSelectColorValueEnabled())
+      ((JTextField)e.getSource()).selectAll();   
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void mouseExited(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+  
+  private void parseValue(Value id)
+  {
+    final int i = id.ordinal();
+    float value = Float.NaN;
+    
+    /* then it's RGB or HSB value */
+    if (!id.isHex())
+    {
+
+    }
+  }
+
+  @Override
+  public void actionPerformed(ActionEvent e)
+  {
+    JTextField field = (JTextField)e.getSource();
+    parseValue(mapping.get(field)); 
   }
 }
